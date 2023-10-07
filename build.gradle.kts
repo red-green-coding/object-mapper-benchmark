@@ -28,6 +28,12 @@ tasks.withType<JavaCompile>(){
     options.compilerArgs.add("-parameters")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 jmh {
     warmupIterations = 2
     iterations = 2
