@@ -1,8 +1,8 @@
 
 # Why you should reuse Jackson's ObjectMapper
 
-As freelancers, we see a lot of different projects. 
-One issue we see is the suboptimal usage of Jackson's ObjectMapper similar to this:
+As freelancers, we encounter a wide array of projects, each with its own unique characteristics and challenges. 
+Among the common issues we come across is the less-than-ideal utilization of Jackson's ObjectMapper, often resembling scenarios like this:
 
 ```java
 public String toJson(SomeDto someObject){
@@ -10,32 +10,61 @@ public String toJson(SomeDto someObject){
     return mapper.writeValueAsString(someObject);
 }
 ```
-The most extreme case I have seen this code, was inside a Hibernate column mapper.
+The most extreme instance I've come across featuring this code was nestled within a Hibernate column mapper.
 
-As you can see, whenever we want to serialize an instance of SomeDto to a Json string, a new instance of ObjectMapper is being created.
-This is not ideal for 2 reasons:
+As you can see, every time we need to serialize an instance of SomeDto into a JSON string, we create a new instance of ObjectMapper.
+This practice is less than ideal for two distinct reasons:
 - Creating the ObjectMapper itself is an expensive operation. TODO: why? maybe look at a  heap dump?
 <img src="object-mapper-memory.png" alt="object mapper inernal state" width="400"/>
 
-- ObjectMapper uses reflection when serializing custom classes to and from Json. 
-E.g. in order to map a Json object to a custom class, it needs to know if it should use the constructor with parameters or a no arg constructor with setter or direct property access.
-Being quite versatile it also supports a mix of these :-).
-Thing is, it needs to build a strategy of how to do the actual mapping.
-This is done by using reflection to get all the properties, methods and annotations.
-This needs to be done only once, and it will cache this strategy inside the ObjectMapper.
-When it wants to create an instance of the same class again, the strategy has already been created and be reused.
+- The ObjectMapper employs reflection to seamlessly handle the serialization and deserialization of custom classes to and from JSON. 
+For instance, when it encounters a JSON object that needs to be mapped to a custom class, it must determine whether to utilize a constructor with parameters, a no-argument constructor with setter methods, 
+or direct property access. 
+Remarkably versatile as Jackson is, a combination of these approaches is perfectly valid as well.
+The key lies in its ability to construct a well-thought-out strategy for executing the actual mapping process. 
+This entails a two-step process: first, it utilizes reflection to gather all properties, methods, and annotations. 
+Subsequently, it assembles a mapping strategy.
+This strategy is then cached within the ObjectMapper instance.
+Whenever the ObjectMapper needs to map a JSON object to the same class again, the strategy is already prepped and ready for deployment, resulting in optimized performance.
 
 
+Both of these are performance concerns.
+If you use the ObjectMapper only sporadically, there's no need to be overly concerned (take a look at the absolute numbers in the benchmarks).
+However, if you're dealing with high throughput, it's worth delving further into this topic.
+Avoiding these issues is straightforward and can lead to a significant boost in serialization speed (in our benchmarks, we observed a whopping 40-fold increase).
+So, read on if you're keen on not wasting CPU cycles and response delays.
+
+## Benchmarks
+Source code of the benchmark: https://github.com/red-green-coding/object-mapper-tests
+
+The benchmarks are designed to give you a basic understanding of the performance disparities between reusing the ObjectMapper and generating a new instance for each call.
+They employ a relatively modest payload and do not take full advantage of the extensive Jackson features available for customizing the serialization process.
+In real-world situations, we anticipate the gap in performance to be even more pronounced.
+
+Payload used to serialize and deserialize
+//TODO: keep me up to date
+```json
+{
+  "some": "some",
+  "dtoEnum": "B",
+  "innerDto": {
+    "num": 123,
+    "strings": [ "1", "2" ]
+  }
+}
+```
+
+[JMH report](https://jmh.morethan.io/?gist=1d98e83fa1fcab88beaf40caa0ea35be)
+
+TODO: Discuss
 
 ## How to avoid creating new ObjectMapper instances
-
-ObjectMapper is threadsafe as long as you do not change the configuration.
 
 > Mapper instances are fully thread-safe provided that ALL configuration of the instance occurs before ANY read or write calls.
 
 [JavaDoc](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html)
 
-Meaning as long as we do not change its configuration, after we started to use it, we can share it.
+Meaning as long as we do not change its configuration, after we started to use it, we can share it between multiple threads.
 In most cases we recommend to just use a static field like
 
 ```java
@@ -43,20 +72,21 @@ public final static ObjectMapper mapper = new ObjectMapper().registerModule(new 
 ```
 Of course if you use it inside a singleton like a Spring component, having it as an instance property is fine as well.
 
-If you cannot for some reason be sure that the configuration will not change during runtime, the recommendation is
+If you cannot for some reason be sure that the configuration will not change during runtime, the recommendation is to
 > Construct and use ObjectReader for reading, ObjectWriter for writing. Both types are fully immutable ...
 
 [JavaDoc](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html)
 
-This is a bit less convenient I never used.
+This is a bit less convenient, and we solely see reasons to use it.
 
 ## When to share an ObjectMapper between different components?
-We recommend to share the same instance as long as the use the same configuration.
-When would I use different configuration? 
-In most cases Json is used when communicating whit external systems.
-The systems might use Json in slightly different ways.
-E.g. this strange legacy system might format timestamps using this strange format, whereas other systems use ISO-8601 compatible string.
-In such a case using differently configured ObjectMappers makes perfectly sense.
+When ObjectMappers share the same configuration, there's typically no need to employ separate instances. 
+However, you might wonder when it becomes necessary to utilize distinct configurations.
+In many scenarios, JSON serves as the go-to format for external system communication. 
+These systems, though, might use JSON in slightly varying manners. 
+For instance, consider a peculiar legacy system that formats timestamps in an unconventional manner, while other systems adhere to the ISO-8601-compatible string format.
+In such situations, opting for ObjectMappers with distinct configurations becomes entirely justifiable.
+
 
 ## Passing the mapper as a dependency vs using a global reference
 
@@ -100,17 +130,9 @@ An exception might be when you are inside a Spring application and want to use t
 
 Never ever mock ObjectMapper! 😱
 
-## Benchmarks
-
-[JMH report](https://jmh.morethan.io/?gist=1d98e83fa1fcab88beaf40caa0ea35be)
-
-TODO: Discuss
-
-
 ### Do not use findAndRegisterModules
-Do use [`mapper.findAndRegisterModules()`](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html#findAndRegisterModules()).
-This will load any Jackson found on the class path.
-This makes your tests less reliable, as they use a different classpath with additional dependencies.
-At least tests that run in the same JVM as the test subject, like unit and integration tests.
+Avoid using [`mapper.findAndRegisterModules()`](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html#findAndRegisterModules()), 
+as it will dynamically load any Jackson modules it discovers on the classpath. 
+This practice can introduce reliability issues into your tests, especially when they share the same classpath with additional dependencies, which is often the case for unit and integration tests.
 
 ## TODOs
