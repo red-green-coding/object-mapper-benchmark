@@ -10,10 +10,18 @@ public String toJson(SomeDto someObject){
     return mapper.writeValueAsString(someObject);
 }
 ```
-The most extreme instance I've come across featuring this code was nestled within a Hibernate column mapper.
 
 As you can see, every time we need to serialize an instance of SomeDto into a JSON string, we create a new instance of ObjectMapper.
-This practice is less than ideal for two distinct reasons:
+The most extreme instance I've come across featuring this code was nestled within a Hibernate column mapper.
+
+This practice is less than ideal the Jackson documentation is not really clear with recommendations here. 
+It is only mentioned in some source code samples, e.g. in [JavaDoc of the ObjectMapper](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html)
+
+> `final ObjectMapper mapper = new ObjectMapper(); // can use static singleton, inject: just make sure to reuse!`
+
+This why we created this writup, which will allow us to referre to whenever we encounter this usage patterns.
+
+Not reusing an ObjectMapper is less than ideal for two distinct reasons:
 - Creating the ObjectMapper itself is an expensive operation. TODO: why? maybe look at a  heap dump?
 <img src="object-mapper-memory.png" alt="object mapper inernal state" width="400"/>
 
@@ -79,14 +87,6 @@ If you cannot for some reason be sure that the configuration will not change dur
 
 This is a bit less convenient, and we solely see reasons to use it.
 
-## When to share an ObjectMapper between different components?
-When ObjectMappers share the same configuration, there's typically no need to employ separate instances. 
-However, you might wonder when it becomes necessary to utilize distinct configurations.
-In many scenarios, JSON serves as the go-to format for external system communication. 
-These systems, though, might use JSON in slightly varying manners. 
-For instance, consider a peculiar legacy system that formats timestamps in an unconventional manner, while other systems adhere to the ISO-8601-compatible string format.
-In such situations, opting for ObjectMappers with distinct configurations becomes entirely justifiable.
-
 
 ## Passing the mapper as a dependency vs using a global reference
 
@@ -130,9 +130,31 @@ An exception might be when you are inside a Spring application and want to use t
 
 Never ever mock ObjectMapper! 😱
 
+
+## When to share an ObjectMapper between different components?
+When ObjectMappers share the same configuration, there's typically no need to employ separate instances.
+However, you might wonder when it becomes necessary to utilize distinct configurations.
+In many scenarios, JSON serves as the go-to format for external system communication.
+These systems, though, might use JSON in slightly varying manners.
+For instance, consider a peculiar legacy system that formats timestamps in an unconventional manner, while other systems adhere to the ISO-8601-compatible string format.
+In such situations, opting for ObjectMappers with distinct configurations becomes entirely justifiable.
+
+
 ### Do not use findAndRegisterModules
 Avoid using [`mapper.findAndRegisterModules()`](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html#findAndRegisterModules()), 
 as it will dynamically load any Jackson modules it discovers on the classpath. 
 This practice can introduce reliability issues into your tests, especially when they share the same classpath with additional dependencies, which is often the case for unit and integration tests.
 
+# Conclusion
+Just make the mapper a static field and reuse it.
+
+
 ## TODOs
+
+
+Probably out of scope:
+## Runtime reflection vs compiletime reflection
+Nowadays, there are libraries that can map Json without runtime reflection like [kotlinx.serialization](https://github.com/Kotlin/kotlinx.serialization).
+They typically use a compiler plugin to generate custom mapper at compile time.
+This can avoid some of the problems mentioned here and can have even better performance characteristics than Jackson (which is already pretty good).
+They are usually a bit less convenient to use and offer far fewer options to configure the mapping, when compared to Jackson.
