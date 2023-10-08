@@ -21,7 +21,8 @@ It is only mentioned in some source code samples, e.g. in [JavaDoc of the Object
 
 This why we created this writup, which will allow us to referre to whenever we encounter this usage patterns.
 
-tldr: Reuse ObjectMapper with same configuration. They threadsafe as long as you do not change the configuration.
+tldr: If you care about serialization performance, reuse ObjectMapper instances. 
+They are threadsafe, if you do not change their configuration while using them.
 
 ## Why to reuse ObjectMapper instances
 
