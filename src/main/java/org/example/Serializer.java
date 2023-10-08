@@ -1,13 +1,14 @@
 package org.example;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 public class Serializer {
 
-    private static ObjectMapper getNewObjectMapper() {
+    public static ObjectMapper getNewObjectMapper() {
         return new ObjectMapper().registerModule(new ParameterNamesModule());
     }
 

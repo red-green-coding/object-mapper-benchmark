@@ -35,9 +35,9 @@ java {
 }
 
 jmh {
-    warmupIterations = 2
-    iterations = 2
-    fork = 2
+    warmupIterations = 1
+    iterations = 1
+    fork = 1
     timeUnit = "ms"
     resultFormat = "json"
 }

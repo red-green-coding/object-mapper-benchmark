@@ -15,12 +15,12 @@ public class ObjectMapperToStringBenchmark {
     private Dto dto = new Dto("some", Dto.DtoEnum.B, new Dto.InnerDto(123l, List.of("1", "2", "3")));
 
     @Benchmark
-    public void newInstanceToString(Blackhole bh) throws JsonProcessingException {
+    public void usingNewInstance(Blackhole bh) throws JsonProcessingException {
         bh.consume(serializer.newInstanceToString(dto));
     }
 
     @Benchmark
-    public void staticInstanceToString(Blackhole bh) throws JsonProcessingException {
+    public void usingStaticInstance(Blackhole bh) throws JsonProcessingException {
         bh.consume(serializer.staticInstanceToString(dto));
     }
 }

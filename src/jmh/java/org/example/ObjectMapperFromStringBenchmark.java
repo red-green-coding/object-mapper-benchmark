@@ -15,22 +15,22 @@ public class ObjectMapperFromStringBenchmark {
 
 
     @Benchmark
-    public void newInstanceFromString(Blackhole bh) throws JsonProcessingException {
+    public void usingNewInstance(Blackhole bh) throws JsonProcessingException {
         bh.consume(serializer.newInstanceFromString(json));
     }
 
     @Benchmark
-    public void staticInstanceFromString(Blackhole bh) throws JsonProcessingException {
+    public void usingStaticInstance(Blackhole bh) throws JsonProcessingException {
         bh.consume(serializer.staticInstanceFromString(json));
     }
 
     @Benchmark
-    public void newInstanceFromStringToJsonNode(Blackhole bh) throws JsonProcessingException {
+    public void usingNewInstanceToJsonNode(Blackhole bh) throws JsonProcessingException {
         bh.consume(serializer.newInstanceFromStringToJsonNode(json));
     }
 
     @Benchmark
-    public void staticInstanceFromStringToJsonNode(Blackhole bh) throws JsonProcessingException {
+    public void usingStaticInstanceToJsonNode(Blackhole bh) throws JsonProcessingException {
         bh.consume(serializer.staticInstanceFromStringToJsonNode(json));
     }
 }
