@@ -1,7 +1,6 @@
 package org.example;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -24,7 +23,8 @@ public class Serializer {
         return getNewObjectMapper().readTree(json);
     }
 
-    private final static ObjectMapper mapper = getNewObjectMapper();
+    private static final ObjectMapper mapper = getNewObjectMapper();
+
     public String staticInstanceToString(Object dto) throws JsonProcessingException {
         return mapper.writeValueAsString(dto);
     }
@@ -36,5 +36,4 @@ public class Serializer {
     public JsonNode staticInstanceFromStringToJsonNode(String json) throws JsonProcessingException {
         return mapper.readTree(json);
     }
-
 }

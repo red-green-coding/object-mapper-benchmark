@@ -10,9 +10,9 @@ import org.openjdk.jmh.infra.Blackhole;
 public class ObjectMapperFromStringBenchmark {
 
     private Serializer serializer = new Serializer();
-    private String json = """
-            {"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
-
+    private String json =
+            """
+			{"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
 
     @Benchmark
     public void usingNewInstance(Blackhole bh) throws JsonProcessingException {

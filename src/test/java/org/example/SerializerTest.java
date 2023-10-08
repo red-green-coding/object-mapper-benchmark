@@ -1,20 +1,18 @@
 package org.example;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 public class SerializerTest {
     Dto DTO_INSTANCE = new Dto("some", Dto.DtoEnum.B, new Dto.InnerDto(123L, List.of("1", "2")));
 
-
-    String JSON = """
-            {"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
+    String JSON =
+            """
+			{"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
 
     @Test
     public void staticInstanceToString() throws JsonProcessingException {
@@ -28,7 +26,9 @@ public class SerializerTest {
     public void staticInstanceFromString() throws JsonProcessingException {
         var serializer = new Serializer();
 
-        assertThat(serializer.staticInstanceFromString(JSON)).usingRecursiveComparison().isEqualTo(DTO_INSTANCE);
+        assertThat(serializer.staticInstanceFromString(JSON))
+                .usingRecursiveComparison()
+                .isEqualTo(DTO_INSTANCE);
     }
 
     @Test
@@ -43,7 +43,9 @@ public class SerializerTest {
     public void newInstanceFromString() throws JsonProcessingException {
         var serializer = new Serializer();
 
-        assertThat(serializer.newInstanceFromString(JSON)).usingRecursiveComparison().isEqualTo(DTO_INSTANCE);
+        assertThat(serializer.newInstanceFromString(JSON))
+                .usingRecursiveComparison()
+                .isEqualTo(DTO_INSTANCE);
     }
 
     @Test

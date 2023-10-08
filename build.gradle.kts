@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("me.champeau.jmh") version "0.7.1"
+    id("com.diffplug.spotless") version "6.22.0"
 }
 
 group = "org.example"
@@ -26,6 +27,12 @@ tasks.test {
 
 tasks.withType<JavaCompile>(){
     options.compilerArgs.add("-parameters")
+}
+
+spotless {
+    java {
+        googleJavaFormat().aosp()
+    }
 }
 
 java {

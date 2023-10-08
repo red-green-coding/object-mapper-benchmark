@@ -15,7 +15,9 @@ public class Dto {
     }
 
     public enum DtoEnum {
-        A,B,C
+        A,
+        B,
+        C
     }
 
     public static class InnerDto {
