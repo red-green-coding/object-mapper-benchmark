@@ -21,6 +21,10 @@ It is only mentioned in some source code samples, e.g. in [JavaDoc of the Object
 
 This why we created this writup, which will allow us to referre to whenever we encounter this usage patterns.
 
+tldr: Reuse ObjectMapper with same configuration. They threadsafe as long as you do not change the configuration.
+
+## Why to reuse ObjectMapper instances
+
 Not reusing an ObjectMapper is less than ideal for two distinct reasons:
 - Creating the ObjectMapper itself is an expensive operation. TODO: why? maybe look at a  heap dump?
 <img src="object-mapper-memory.png" alt="object mapper inernal state" width="400"/>
