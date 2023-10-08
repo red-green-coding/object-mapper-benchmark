@@ -39,4 +39,5 @@ jmh {
     iterations = 2
     fork = 2
     timeUnit = "ms"
+    resultFormat = "json"
 }
