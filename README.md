@@ -14,12 +14,13 @@ public String toJson(SomeDto someObject){
 As you can see, every time we need to serialize an instance of SomeDto into a JSON string, we create a new instance of ObjectMapper.
 The most extreme instance I've come across featuring this code was nestled within a Hibernate column mapper.
 
-This practice is less than ideal the Jackson documentation is not really clear with recommendations here. 
-It is only mentioned in some source code samples, e.g. in [JavaDoc of the ObjectMapper](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html)
+This practice is less than ideal.
+Jackson's documentation is not really clear with recommendations here. 
+I found it being mention only in some source code samples, e.g. in [JavaDoc of the ObjectMapper](https://fasterxml.github.io/jackson-databind/javadoc/2.7/com/fasterxml/jackson/databind/ObjectMapper.html)
 
 > `final ObjectMapper mapper = new ObjectMapper(); // can use static singleton, inject: just make sure to reuse!`
 
-This why we created this writup, which will allow us to referre to whenever we encounter this usage patterns.
+This why we created this writeup, which will allow us to refer to whenever we encounter this usage patterns.
 
 tldr: If you care about serialization performance, reuse ObjectMapper instances. 
 They are threadsafe, if you do not change their configuration while using them.
