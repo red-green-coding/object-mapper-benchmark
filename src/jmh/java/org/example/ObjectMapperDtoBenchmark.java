@@ -17,22 +17,22 @@ public class ObjectMapperDtoBenchmark {
             new Dto("some", Dto.DtoEnum.B, new Dto.InnerDto(123l, List.of("1", "2", "3")));
 
     @Benchmark
-    public Dto toInstanceUsingNewInstance() throws Exception {
+    public Dto fromStringNewInstance() throws Exception {
         return serializer.newInstanceFromString(json);
     }
 
     @Benchmark
-    public Dto toInstanceUsingStaticInstance() throws Exception {
+    public Dto fromStringStaticInstance() throws Exception {
         return serializer.staticInstanceFromString(json);
     }
 
     @Benchmark
-    public String toStringUsingNewInstance() throws Exception {
+    public String toStringNewInstance() throws Exception {
         return serializer.newInstanceToString(dto);
     }
 
     @Benchmark
-    public String toStringUsingStaticInstance() throws Exception {
+    public String toStringStaticInstance() throws Exception {
         return serializer.staticInstanceToString(dto);
     }
 }

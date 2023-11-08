@@ -14,12 +14,12 @@ public class ObjectMapperJsonNodeBenchmark {
 			{"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
 
     @Benchmark
-    public JsonNode usingNewInstanceToJsonNode() throws Exception {
+    public JsonNode newInstanceToJsonNode() throws Exception {
         return serializer.newInstanceFromStringToJsonNode(json);
     }
 
     @Benchmark
-    public JsonNode usingStaticInstanceToJsonNode() throws Exception {
+    public JsonNode staticInstanceToJsonNode() throws Exception {
         return serializer.staticInstanceFromStringToJsonNode(json);
     }
 }
