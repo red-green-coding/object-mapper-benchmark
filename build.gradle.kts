@@ -4,11 +4,7 @@ plugins {
     id("com.diffplug.spotless") version "6.22.0"
     `jvm-test-suite`
     id("com.adarshr.test-logger") version "4.0.0"
-
 }
-
-group = "org.example"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -24,7 +20,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<JavaCompile>(){
+tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 }
 
