@@ -68,7 +68,7 @@ testlogger {
 // https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html
 testing {
     suites {
-        val test by getting(JvmTestSuite::class) {
+        withType(JvmTestSuite::class).configureEach {
             useJUnitJupiter("5.10.0")
 
             dependencies {
@@ -81,10 +81,6 @@ testing {
 
             dependencies {
                 implementation(sourceSets.jmh.get().runtimeClasspath)
-
-                useJUnitJupiter("5.10.0")
-
-                implementation("org.assertj:assertj-core:3.24.2")
             }
         }
     }
