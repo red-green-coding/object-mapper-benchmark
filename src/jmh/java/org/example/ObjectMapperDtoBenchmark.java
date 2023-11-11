@@ -8,22 +8,22 @@ import org.openjdk.jmh.annotations.State;
 @State(Scope.Benchmark)
 public class ObjectMapperDtoBenchmark {
 
-    private Serializer serializer = new Serializer();
-    private String json =
+    private final Serializer serializer = new Serializer();
+    public static final String JSON =
             """
 			{"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
 
-    private Dto dto =
-            new Dto("some", Dto.DtoEnum.B, new Dto.InnerDto(123l, List.of("1", "2", "3")));
+    private final Dto dto =
+            new Dto("some", Dto.DtoEnum.B, new Dto.InnerDto(123L, List.of("1", "2", "3")));
 
     @Benchmark
     public Dto fromStringNewInstance() throws Exception {
-        return serializer.newInstanceFromString(json);
+        return serializer.newInstanceFromString(JSON);
     }
 
     @Benchmark
     public Dto fromStringStaticInstance() throws Exception {
-        return serializer.staticInstanceFromString(json);
+        return serializer.staticInstanceFromString(JSON);
     }
 
     @Benchmark
