@@ -2,10 +2,9 @@ plugins {
     id("java")
     id("me.champeau.jmh") version "0.7.1"
     id("com.diffplug.spotless") version "6.22.0"
+    `jvm-test-suite`
+    id("com.adarshr.test-logger") version "4.0.0"
 }
-
-group = "org.example"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -15,17 +14,13 @@ dependencies {
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.15.3"))
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
-
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core:3.24.2")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<JavaCompile>(){
+tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
 }
 
@@ -48,4 +43,45 @@ jmh {
     timeUnit = "ms"
     resultFormat = "json"
     jmhVersion = "1.37"
+}
+
+val isIdea = providers.systemProperty("idea.version")
+testlogger {
+    // idea can't handle ANSI output
+    setTheme(if (isIdea.isPresent) "plain" else "mocha")
+    showFullStackTraces = false
+
+    showStandardStreams = true
+    showPassedStandardStreams = false
+    showSkippedStandardStreams = false
+    showFailedStandardStreams = true
+
+    showPassed = true
+    showSkipped = false
+    showFailed = true
+}
+
+// https://docs.gradle.org/current/userguide/jvm_test_suite_plugin.html
+testing {
+    suites {
+        withType(JvmTestSuite::class).configureEach {
+            useJUnitJupiter("5.10.0")
+
+            dependencies {
+                implementation("org.assertj:assertj-core:3.24.2")
+            }
+        }
+
+        register<JvmTestSuite>("jmhTest") {
+            testType = TestSuiteType.INTEGRATION_TEST
+
+            dependencies {
+                implementation(sourceSets.jmh.get().runtimeClasspath)
+            }
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn(testing.suites.named("jmhTest"))
 }
