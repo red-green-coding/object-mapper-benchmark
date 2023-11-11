@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("me.champeau.jmh") version "0.7.1"
+    id("me.champeau.jmh") version "0.7.2"
     id("com.diffplug.spotless") version "6.22.0"
     `jvm-test-suite`
     id("com.adarshr.test-logger") version "4.0.0"
@@ -65,7 +65,7 @@ testlogger {
 testing {
     suites {
         withType(JvmTestSuite::class).configureEach {
-            useJUnitJupiter("5.10.0")
+            useJUnitJupiter("5.10.1")
 
             dependencies {
                 implementation("org.assertj:assertj-core:3.24.2")
