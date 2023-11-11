@@ -1,7 +1,7 @@
 
 ## Execute benchmark
 ```bash
-gw jmh
+./gradlew jmh
 ```
 
 Benachmark results can be found in [./build/results/jmh/results.json](./build/results/jmh/results.json). 
