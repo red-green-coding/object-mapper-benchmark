@@ -1,10 +1,10 @@
 package sample;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.example.ObjectMapperDtoBenchmark.getNewObjectMapper;
 
 import org.example.ObjectMapperDtoBenchmark;
 import org.example.ObjectMapperJsonNodeBenchmark;
-import org.example.Serializer;
 import org.junit.jupiter.api.Test;
 
 public class ObjectMapperJsonNodeBenchmarkTest {
@@ -15,7 +15,7 @@ public class ObjectMapperJsonNodeBenchmarkTest {
     public void newInstanceFromStringToJsonNode() throws Exception {
         var jsonNode = sut.newInstanceToJsonNode();
 
-        var jsonString = Serializer.getNewObjectMapper().writeValueAsString(jsonNode);
+        var jsonString = getNewObjectMapper().writeValueAsString(jsonNode);
         assertThat(jsonString).isEqualTo(ObjectMapperDtoBenchmark.JSON);
     }
 
@@ -23,7 +23,7 @@ public class ObjectMapperJsonNodeBenchmarkTest {
     public void staticInstanceFromStringToJsonNode() throws Exception {
         var jsonNode = sut.staticInstanceToJsonNode();
 
-        var jsonString = Serializer.getNewObjectMapper().writeValueAsString(jsonNode);
+        var jsonString = getNewObjectMapper().writeValueAsString(jsonNode);
         assertThat(jsonString).isEqualTo(ObjectMapperDtoBenchmark.JSON);
     }
 }

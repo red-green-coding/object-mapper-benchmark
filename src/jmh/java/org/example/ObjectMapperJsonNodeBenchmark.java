@@ -1,5 +1,8 @@
 package org.example;
 
+import static org.example.ObjectMapperDtoBenchmark.MAPPER;
+import static org.example.ObjectMapperDtoBenchmark.getNewObjectMapper;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
@@ -8,18 +11,13 @@ import org.openjdk.jmh.annotations.State;
 @State(Scope.Benchmark)
 public class ObjectMapperJsonNodeBenchmark {
 
-    private Serializer serializer = new Serializer();
-    private String json =
-            """
-			{"some":"some","dtoEnum":"B","innerDto":{"num":123,"strings":["1","2"]}}""";
-
     @Benchmark
     public JsonNode newInstanceToJsonNode() throws Exception {
-        return serializer.newInstanceFromStringToJsonNode(json);
+        return getNewObjectMapper().readTree(ObjectMapperDtoBenchmark.JSON);
     }
 
     @Benchmark
     public JsonNode staticInstanceToJsonNode() throws Exception {
-        return serializer.staticInstanceFromStringToJsonNode(json);
+        return MAPPER.readTree(ObjectMapperDtoBenchmark.JSON);
     }
 }
