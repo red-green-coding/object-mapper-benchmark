@@ -68,7 +68,7 @@ testing {
             useJUnitJupiter("5.10.1")
 
             dependencies {
-                implementation("org.assertj:assertj-core:3.25.3")
+                implementation("org.assertj:assertj-core:3.26.0")
             }
         }
 
