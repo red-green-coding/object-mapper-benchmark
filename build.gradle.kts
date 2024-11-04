@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.18.0"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.18.1"))
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 }
