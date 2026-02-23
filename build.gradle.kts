@@ -1,7 +1,7 @@
 plugins {
     id("java")
     id("me.champeau.jmh") version "0.7.3"
-    id("com.diffplug.spotless") version "7.2.1"
+    id("com.diffplug.spotless") version "8.2.1"
     `jvm-test-suite`
     id("com.adarshr.test-logger") version "4.0.0"
 }
